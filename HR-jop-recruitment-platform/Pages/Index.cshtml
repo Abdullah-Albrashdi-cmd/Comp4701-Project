@@ -1,10 +1,85 @@
-﻿@page
+@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Find your next role";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="hero-panel">
+    <div class="hero-copy">
+        <span class="eyebrow">YOUR NEXT STEP STARTS HERE</span>
+        <h1>Find work that<br /><span>moves you forward.</span></h1>
+        <p>Explore opportunities from local employers and keep your applications in one place.</p>
+        <a class="btn btn-primary btn-lg" href="#open-roles">Explore open roles</a>
+    </div>
+    <div class="hero-mark" aria-hidden="true"><span>✦</span></div>
+</section>
+
+<section id="open-roles" class="roles-section">
+    <div class="section-heading">
+        <div>
+            <span class="eyebrow">OPPORTUNITIES</span>
+            <h2>Open positions</h2>
+        </div>
+        <a asp-page="/MyApplications" class="btn btn-outline-primary">Track applications</a>
+    </div>
+
+    <form method="get" class="search-panel mb-4">
+        <label asp-for="SearchTerm" class="visually-hidden">Search jobs</label>
+        <div class="input-group">
+            <span class="input-group-text" aria-hidden="true">⌕</span>
+            <input asp-for="SearchTerm" id="jobSearch" class="form-control" placeholder="Search by job title, category, or location" />
+            <button type="submit" class="btn btn-dark">Search</button>
+        </div>
+    </form>
+
+    <p id="jobCount" class="small text-secondary">@Model.Jobs.Count positions</p>
+    @if (Model.Jobs.Count == 0)
+    {
+        <div class="empty-state">
+            <h3 class="h5">No matching positions</h3>
+            <p class="text-secondary mb-0">Try a different search or check back later.</p>
+        </div>
+    }
+    else
+    {
+        <div id="jobList" class="row g-3">
+            @foreach (var job in Model.Jobs)
+            {
+                var searchText = $"{job.Title} {job.Category} {job.Location}";
+                <div class="col-md-6 col-xl-4 job-card" data-search="@searchText.ToLowerInvariant()">
+                    <article class="card h-100 job-listing">
+                        <div class="card-body d-flex flex-column p-4">
+                            <span class="badge category-badge align-self-start">@job.Category</span>
+                            <h3 class="h5 mt-3">@job.Title</h3>
+                            <p class="text-secondary mb-2">@job.Location</p>
+                            <p class="small text-secondary flex-grow-1">@job.Description</p>
+                            <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                                <span class="small fw-semibold">OMR @job.SalaryRange.ToString("N0") / month</span>
+                                <a asp-page="/JobDetails" asp-route-id="@job.Id" class="btn btn-sm btn-primary">View job</a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            }
+        </div>
+    }
+</section>
+
+@section Scripts {
+    <script>
+        $(function () {
+            const search = $("#jobSearch");
+            const cards = $(".job-card");
+            search.on("input", function () {
+                const term = search.val().toLowerCase().trim();
+                let visible = 0;
+                cards.each(function () {
+                    const match = $(this).data("search").includes(term);
+                    $(this).toggle(match);
+                    if (match) visible++;
+                });
+                $("#jobCount").text(visible + (visible === 1 ? " position" : " positions"));
+            });
+        });
+    </script>
+}

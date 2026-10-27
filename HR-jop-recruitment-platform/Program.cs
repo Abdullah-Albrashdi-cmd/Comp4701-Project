@@ -1,3 +1,5 @@
+using HR_jop_recruitment_platform.Services;
+
 namespace HR_jop_recruitment_platform
 {
     public class Program
@@ -8,6 +10,7 @@ namespace HR_jop_recruitment_platform
 
             // Add services to the container.
             builder.Services.AddRazorPages();
+            builder.Services.AddSingleton<RecruitmentStore>();
 
             var app = builder.Build();
 

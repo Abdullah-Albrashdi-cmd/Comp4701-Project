@@ -1,8 +1,140 @@
-﻿@page 
-@model ManageJopsModel
+@page
+@model ManageJobsModel
 @{
-    ViewData["Title"] = "Manage Jobs";
+    ViewData["Title"] = "Manage jobs";
 }
 
-<h1> class</h1>
+<section class="page-heading">
+    <span class="eyebrow">RECRUITER WORKSPACE</span>
+    <h1>Manage jobs and applications</h1>
+    <p class="text-secondary">Create job listings and update candidate application statuses.</p>
+</section>
 
+@if (Model.Message is not null)
+{
+    <div class="alert alert-info" role="alert">@Model.Message</div>
+}
+
+<div class="row g-4">
+    <section class="col-lg-5">
+        <div class="card">
+            <div class="card-body p-4">
+                <h2 class="h4 mb-3">Post a job</h2>
+                <form method="post" asp-page-handler="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <div class="mb-3">
+                        <label asp-for="NewJob.Title" class="form-label">Job title</label>
+                        <input asp-for="NewJob.Title" class="form-control" />
+                        <span asp-validation-for="NewJob.Title" class="text-danger"></span>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="NewJob.Category" class="form-label">Category</label>
+                            <input asp-for="NewJob.Category" class="form-control" placeholder="Technology" />
+                            <span asp-validation-for="NewJob.Category" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="NewJob.Location" class="form-label">Location</label>
+                            <input asp-for="NewJob.Location" class="form-control" placeholder="Muscat" />
+                            <span asp-validation-for="NewJob.Location" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="NewJob.Description" class="form-label">Description</label>
+                        <textarea asp-for="NewJob.Description" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="NewJob.Description" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="NewJob.Requirements" class="form-label">Requirements</label>
+                        <textarea asp-for="NewJob.Requirements" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="NewJob.Requirements" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="NewJob.SalaryRange" class="form-label">Monthly salary (OMR)</label>
+                        <input asp-for="NewJob.SalaryRange" class="form-control" type="number" step="50" />
+                        <span asp-validation-for="NewJob.SalaryRange" class="text-danger"></span>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Add job</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <div class="col-lg-7">
+        <section class="card mb-4">
+            <div class="card-body p-4">
+                <h2 class="h4 mb-3">Open positions</h2>
+                @if (Model.Jobs.Count == 0)
+                {
+                    <p class="text-secondary mb-0">No open jobs.</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead><tr><th>Position</th><th>Location</th><th></th></tr></thead>
+                            <tbody>
+                                @foreach (var job in Model.Jobs)
+                                {
+                                    <tr>
+                                        <td><strong>@job.Title</strong><div class="small text-secondary">@job.Category</div></td>
+                                        <td>@job.Location</td>
+                                        <td class="text-end">
+                                            <form method="post" asp-page-handler="Delete" asp-route-id="@job.Id"
+                                                  onsubmit="return confirm('Close this job and remove its applications?');">
+                                                <button class="btn btn-sm btn-outline-danger" type="submit">Close</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-body p-4">
+                <h2 class="h4 mb-3">Candidate applications</h2>
+                @if (Model.Applications.Count == 0)
+                {
+                    <p class="text-secondary mb-0">Applications will appear here when candidates apply.</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead><tr><th>Candidate</th><th>Position</th><th>Status</th></tr></thead>
+                            <tbody>
+                                @foreach (var application in Model.Applications)
+                                {
+                                    <tr>
+                                        <td>@application.Candidate.FullName<div class="small text-secondary">@application.Candidate.Email</div></td>
+                                        <td>@application.JobPosting.Title</td>
+                                        <td>
+                                            <form method="post" asp-page-handler="Status" class="d-flex gap-2">
+                                                <input type="hidden" name="applicationId" value="@application.Id" />
+                                                <select name="status" class="form-select form-select-sm" aria-label="Application status">
+                                                    @foreach (var status in Model.Statuses)
+                                                    {
+                                                        <option value="@status" selected="@(application.Status == status)">@status</option>
+                                                    }
+                                                </select>
+                                                <button class="btn btn-sm btn-outline-primary" type="submit">Save</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

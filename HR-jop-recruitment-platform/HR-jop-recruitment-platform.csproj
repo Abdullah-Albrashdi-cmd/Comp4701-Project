@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>HR_jop_recruitment_platform</RootNamespace>
+    <DefaultItemExcludes>$(DefaultItemExcludes);HR-jop-recruitment-platform/**</DefaultItemExcludes>
   </PropertyGroup>
 
 </Project>
