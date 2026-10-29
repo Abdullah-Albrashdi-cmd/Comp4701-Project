@@ -1,0 +1,66 @@
+@page "{id:int}"
+@model JobDetailsModel
+@{
+    ViewData["Title"] = "Job details";
+}
+
+@if (Model.Job is not null)
+{
+    <div class="row g-4">
+        <section class="col-lg-7">
+            <a class="text-decoration-none" asp-page="/Index">&larr; All jobs</a>
+            <div class="card job-detail-card mt-3">
+                <div class="card-body p-4 p-md-5">
+                    <span class="badge text-bg-primary mb-3">@Model.Job.Category</span>
+                    <h1 class="h2">@Model.Job.Title</h1>
+                    <p class="text-secondary">@Model.Job.Location · OMR @Model.Job.SalaryRange.ToString("N0") / month</p>
+                    <h2 class="h5 mt-4">About this role</h2>
+                    <p>@Model.Job.Description</p>
+                    <h2 class="h5 mt-4">Requirements</h2>
+                    <p>@Model.Job.Requirements</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="col-lg-5">
+            <div class="card application-card">
+                <div class="card-body p-4">
+                    <h2 class="h4">Apply for this job</h2>
+                    <p class="text-secondary">Enter your contact details and we will record your application.</p>
+                    @if (Model.ErrorMessage is not null)
+                    {
+                        <div class="alert alert-warning" role="alert">@Model.ErrorMessage</div>
+                    }
+                    <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <div class="mb-3">
+                            <label asp-for="Applicant.FullName" class="form-label">Full name</label>
+                            <input asp-for="Applicant.FullName" class="form-control" autocomplete="name" />
+                            <span asp-validation-for="Applicant.FullName" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Applicant.Email" class="form-label">Email</label>
+                            <input asp-for="Applicant.Email" class="form-control" autocomplete="email" />
+                            <span asp-validation-for="Applicant.Email" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Applicant.Phone" class="form-label">Phone</label>
+                            <input asp-for="Applicant.Phone" class="form-control" autocomplete="tel" />
+                            <span asp-validation-for="Applicant.Phone" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="CoverLetter" class="form-label">Short note <span class="text-secondary">(optional)</span></label>
+                            <textarea asp-for="CoverLetter" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="CoverLetter" class="text-danger"></span>
+                        </div>
+                        <button class="btn btn-primary w-100" type="submit">Submit application</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

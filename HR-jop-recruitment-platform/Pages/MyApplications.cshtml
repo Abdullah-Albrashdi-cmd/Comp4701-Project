@@ -1,0 +1,66 @@
+@page
+@model MyApplicationsModel
+@{
+    ViewData["Title"] = "My applications";
+}
+
+<section class="page-heading">
+    <span class="eyebrow">CANDIDATE PORTAL</span>
+    <h1>Track your applications</h1>
+    <p class="text-secondary">Use the same email address you entered when applying.</p>
+</section>
+
+@if (Model.SuccessMessage is not null)
+{
+    <div class="alert alert-success" role="alert">@Model.SuccessMessage</div>
+}
+@if (Model.ErrorMessage is not null)
+{
+    <div class="alert alert-warning" role="alert">@Model.ErrorMessage</div>
+}
+
+<form method="get" class="card search-panel mb-4">
+    <div class="card-body">
+        <label asp-for="Email" class="form-label">Email address</label>
+        <div class="input-group">
+            <input asp-for="Email" type="email" class="form-control" placeholder="you@example.com" />
+            <button type="submit" class="btn btn-primary">Find applications</button>
+        </div>
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+</form>
+
+@if (!string.IsNullOrWhiteSpace(Model.Email) && Model.ErrorMessage is null)
+{
+    @if (Model.Applications.Count == 0)
+    {
+        <div class="empty-state">
+            <h2 class="h5">No applications found</h2>
+            <p class="text-secondary mb-0">Check your email address or browse the open positions.</p>
+            <a asp-page="/Index" class="btn btn-outline-primary mt-3">Browse jobs</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle application-table">
+                <thead>
+                    <tr><th>Job</th><th>Applied</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var application in Model.Applications)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@application.JobPosting.Title</strong>
+                                <div class="small text-secondary">@application.JobPosting.Location</div>
+                            </td>
+                            <td>@application.AppliedDate.ToLocalTime().ToString("dd MMM yyyy")</td>
+                            <td><span class="badge status-badge">@application.Status</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+}
